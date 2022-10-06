@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "WebAppName": {
+        "type": "String"
+    },
+    "StorageName":{
+        "type":"String"
+    },
+    "Location":{
+        "type":"String"
+    }
+  },
+  "functions": [],
+  "variables": {},
+  "resources": [
+    {
+        "type":"Microsoft.Storage/storageAccounts",
+        "apiVersion": "2021-09-01",
+        "name": "[parameters('StorageName')]",
+        "location":"[parameters('Location')]",
+        "dependsOn":[],
+        "tags":{},
+        "kind": "Storage",
+        "sku":{
+            "name": "Standard_GRS"
+        }
+    },
+    {
+        "type":"Microsoft.Web/serverfarms",
+        "apiVersion": "2021-03-01",
+        "name":"WebAppServicePlan",
+        "location":"[parameters('Location')]",
+        "sku":{
+            "name":"F1"
+        },
+        "properties":{}
+    },
+    {
+        "type":"Microsoft.Web/sites",
+        "apiVersion": "2021-03-01",
+        "name":"[parameters('WebAppName')]",
+        "location":"[parameters('Location')]",
+        "dependsOn":[
+            "[resourceId('Microsoft.Web/serverfarms','WebAppServicePlan')]"
+        ],
+        "properties":{
+            "name":"[parameters('WebAppName')]",
+            "siteConfig":{
+                "appSettings":[],
+                "metadata":[{
+                    "name":"CURRENT_STACK",
+                    "value":"nodejs"
+                }]
+            }
+        }
+    }
+  ],
+  "outputs": {}
+}
